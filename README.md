@@ -1,5 +1,7 @@
 Simple Python module for parsing and visualising QTAIM critical points with py3dmol (best used in a jupyter notebook)
-Apparently looks like AIMAll 
+
+Apparently looks like AIMAll
+
 Extracts data from CPprop.txt multiwfn files and visualises points based on xyz structure.
 
 Example usage
