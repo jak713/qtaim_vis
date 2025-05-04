@@ -96,7 +96,7 @@ class QTAIM:
 #################################################################
 # --- Visualisation Code ---
 #################################################################
-    def visualise(self, xyz_file, show_cp = False, show_rho = False, show_lap = False, show_pos_lap = False, show_bond_lengths = False, aboveXangstrom = False, belowXangstrom =False, X = None, hide_ring_cage = False, show_only_same = False, show_only_different = False, show_atom_labels = False, connect_atoms_A_B = False, A=None, B=None, covalent = True, xyz_outline=False, print_parameters = False, legend = True):
+    def visualise(self, xyz_file,view=None, display=True, show_cp = False, show_rho = False, show_lap = False, show_pos_lap = False, show_bond_lengths = False, aboveXangstrom = False, belowXangstrom =False, X = None, hide_ring_cage = False, show_only_same = False, show_only_different = False, show_atom_labels = False, connect_atoms_A_B = False, A=None, B=None, covalent = True, xyz_outline=False, print_parameters = False, legend = True):
         """Visualise the bond critical points w/ Py3Dmol
             use xyz_file to get coordinates for connecting the CPs
             according to the connected_atoms list"""
@@ -104,7 +104,8 @@ class QTAIM:
             headers_printed = False
             cp_of_interest_num = 0
         self.get_coordinates()
-        view = py3Dmol.view(width=1200, height=1000)
+        if view is None:
+            view = py3Dmol.view(width=1200, height=1000)
 
 
         with open(xyz_file, 'r') as f:
@@ -121,8 +122,12 @@ class QTAIM:
         # find indexes of connected atoms and use that to get the coordinates from the coordinates tuples list (offset index by 1 for python, connected_atoms is 1-indexed)
         for i, atoms in enumerate(self.parameters["connected_atoms"]):
             if connect_atoms_A_B and A is not None and B is not None:
-                if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
-                    continue
+                if A == B:
+                    if set(re.findall(r'[A-Za-z]', str(self.parameters["connected_atoms"][i]))) != {A}:
+                        continue
+                else:
+                    if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
+                        continue  
             if show_only_different and self.is_same_atom_type(i):
                 continue
             if show_only_same and not self.is_same_atom_type(i):
@@ -160,15 +165,19 @@ class QTAIM:
         for i, cp_no in enumerate(self.parameters["CP_no"]):
             if self.parameters["x_coord"][i] is None:
                 continue
+            if connect_atoms_A_B and A is not None and B is not None:
+                if A == B:
+                    if set(re.findall(r'[A-Za-z]', str(self.parameters["connected_atoms"][i]))) != {A}:
+                        continue
+                else:
+                    if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
+                        continue  
             if hide_ring_cage and self.parameters["type"][i] in ["(3,+1)", "(3,+3)"]:
                 continue
             if show_only_same and not self.is_same_atom_type(i):
                 continue
             if show_only_different and self.is_same_atom_type(i):
-                continue
-            if connect_atoms_A_B and A is not None and B is not None:
-                if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
-                    continue    
+                continue 
             x = self.parameters["x_coord"][i]
             y = self.parameters["y_coord"][i]
             z = self.parameters["z_coord"][i]
@@ -307,7 +316,7 @@ class QTAIM:
                     continue
                 if connect_atoms_A_B and A is not None and B is not None:
                     if A == B:
-                        if A not in self.parameters["connected_atoms"][i]:
+                        if set(re.findall(r'[A-Za-z]', str(self.parameters["connected_atoms"][i]))) != {A}:
                             continue
                     else:
                         if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
@@ -350,8 +359,12 @@ class QTAIM:
                 if show_only_different and self.is_same_atom_type(i):
                     continue
                 if connect_atoms_A_B and A is not None and B is not None:
-                    if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
-                        continue
+                    if A == B:
+                        if set(re.findall(r'[A-Za-z]', str(self.parameters["connected_atoms"][i]))) != {A}:
+                            continue
+                    else:
+                        if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
+                            continue  
                 x = self.parameters["x_coord"][i]
                 y = self.parameters["y_coord"][i]
                 z = self.parameters["z_coord"][i]
@@ -382,8 +395,12 @@ class QTAIM:
                 if show_only_different and self.is_same_atom_type(i):
                     continue
                 if connect_atoms_A_B and A is not None and B is not None:
-                    if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
-                        continue
+                    if A == B:
+                        if set(re.findall(r'[A-Za-z]', str(self.parameters["connected_atoms"][i]))) != {A}:
+                            continue
+                    else:
+                        if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
+                            continue  
                 x = self.parameters["x_coord"][i]
                 y = self.parameters["y_coord"][i]
                 z = self.parameters["z_coord"][i]
@@ -416,8 +433,12 @@ class QTAIM:
                 if show_only_different and self.is_same_atom_type(i):
                     continue
                 if connect_atoms_A_B and A is not None and B is not None:
-                    if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
-                        continue
+                    if A == B:
+                        if set(re.findall(r'[A-Za-z]', str(self.parameters["connected_atoms"][i]))) != {A}:
+                            continue
+                    elif A != B:
+                        if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
+                            continue  
                 x = self.parameters["x_coord"][i]
                 y = self.parameters["y_coord"][i]
                 z = self.parameters["z_coord"][i]
@@ -447,8 +468,12 @@ class QTAIM:
                 if show_only_same and not self.is_same_atom_type(i):
                     continue
                 if connect_atoms_A_B and A is not None and B is not None:
-                    if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
-                        continue
+                    if A == B:
+                        if set(re.findall(r'[A-Za-z]', str(self.parameters["connected_atoms"][i]))) != {A}:
+                            continue
+                    else:
+                        if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
+                            continue  
                 if not atoms:
                     continue
                 atom_indexs = re.findall(r'\d+', atoms)
@@ -499,6 +524,6 @@ class QTAIM:
             view.setStyle({'stick': {'radius': 0.03}})
 
         view.setBackgroundColor('white')
-        view.zoomTo()
-        # Show the view
-        view.show()
+        if display:
+            view.zoomTo()
+            view.show()
