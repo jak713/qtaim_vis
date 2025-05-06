@@ -6,10 +6,10 @@ class QTAIM:
     __version__ = "1.0.4"
 
     def __init__(self, file):
-        self.file = file
+        self.file = file # will use this one day
         self.parameters = self.extract_qtaim(file)
 	
-    def extract_qtaim(self, file):
+    def extract_qtaim(self, file): # any other params worth extracting?
         parameters = {
             "CP_no": [],
             "type": [],
@@ -30,7 +30,7 @@ class QTAIM:
                 parameters["connected_atoms"].append([])
             elif "Connected atoms" in line:
                 connected_atoms = [atom.replace('(', '').replace(')', '').replace('-', '').replace(' ', '') for atom in line.split()[2:]]
-                connected_atoms = [atom for atom in connected_atoms if atom] 
+                connected_atoms = [atom for atom in connected_atoms if atom] # remove any empty strings
                 if parameters["connected_atoms"]:
                     parameters["connected_atoms"][-1] = connected_atoms
             elif "Density of all electrons" in line:
@@ -48,7 +48,7 @@ class QTAIM:
             if len(atoms) >= 2:
                 donor = atoms[0]
                 acceptor = atoms[-1]
-                parameters["connected_atoms"][i] = donor + acceptor
+                parameters["connected_atoms"][i] = donor + acceptor # no list of lists, turn into string if non-empty
 
         return parameters
 
@@ -95,7 +95,7 @@ class QTAIM:
 
 
 #################################################################
-# --- Visualisation Code ---
+#               --- Visualisation Code ---                      #
 #################################################################
     def visualise(self, xyz_file,view=None, display=True, show_cp = False, show_rho = False, show_lap = False, show_pos_lap = False, show_bond_lengths = False, aboveXangstrom = False, belowXangstrom =False, X = None, hide_ring_cage = False, show_only_same = False, show_only_different = False, show_atom_labels = False, connect_atoms_A_B = False, A=None, B=None, covalent = True, xyz_outline=False, print_parameters = False, legend = True, print_latex=False):
         """Visualise the bond critical points w/ Py3Dmol
@@ -164,8 +164,8 @@ class QTAIM:
                 view.addCylinder({'start': {'x': coord2[0], 'y': coord2[1], 'z': coord2[2]},
                         'end':   {'x': bcp_x, 'y': bcp_y, 'z': bcp_z},
                         'color': color, 'radius': 0.01})
-                
-                connection_indexes.append((atom1, atom2))
+                if self.parameters["laplacian"][cp_no] > 0:
+                    connection_indexes.append((atom1, atom2))
 
         # add bcps with different colors depending on the type of CP (blue for bond (3,-1), red for ring(3,+1), green for cage(3,+3), yellow for (3,-3))
         for i, cp_no in enumerate(self.parameters["CP_no"]):
@@ -326,7 +326,7 @@ class QTAIM:
                         'fontSize': 10,
                         'fontColor': 'black',
                         'fontWeight': 'bold',
-                        'attached': True  # Attach the label to the sphere
+                        'attached': True  # Attach the label to the sphere, though this may not work as expected (not a researched feature)iu
                     })
 
         if show_cp:
