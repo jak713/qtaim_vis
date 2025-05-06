@@ -29,7 +29,8 @@ class QTAIM:
                 parameters["type"].append(parts[4])
                 parameters["connected_atoms"].append([])
             elif "Connected atoms" in line:
-                connected_atoms = line.split()[2:]
+                connected_atoms = [atom.replace('(', '').replace(')', '').replace('-', '').replace(' ', '') for atom in line.split()[2:]]
+                connected_atoms = [atom for atom in connected_atoms if atom] 
                 if parameters["connected_atoms"]:
                     parameters["connected_atoms"][-1] = connected_atoms
             elif "Density of all electrons" in line:
@@ -44,9 +45,9 @@ class QTAIM:
                 parameters["lagrangian_kinetic_energy"].append(float(line.split()[-1]))
 
         for i, atoms in enumerate(parameters["connected_atoms"]):
-            if len(atoms) >= 3:
-                donor = atoms[0].replace('(', '').replace(')', '')
-                acceptor = atoms[2].replace('(', '').replace(')', '')
+            if len(atoms) >= 2:
+                donor = atoms[0]
+                acceptor = atoms[-1]
                 parameters["connected_atoms"][i] = donor + acceptor
 
         return parameters
