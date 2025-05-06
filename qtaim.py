@@ -96,10 +96,13 @@ class QTAIM:
 #################################################################
 # --- Visualisation Code ---
 #################################################################
-    def visualise(self, xyz_file,view=None, display=True, show_cp = False, show_rho = False, show_lap = False, show_pos_lap = False, show_bond_lengths = False, aboveXangstrom = False, belowXangstrom =False, X = None, hide_ring_cage = False, show_only_same = False, show_only_different = False, show_atom_labels = False, connect_atoms_A_B = False, A=None, B=None, covalent = True, xyz_outline=False, print_parameters = False, legend = True):
+    def visualise(self, xyz_file,view=None, display=True, show_cp = False, show_rho = False, show_lap = False, show_pos_lap = False, show_bond_lengths = False, aboveXangstrom = False, belowXangstrom =False, X = None, hide_ring_cage = False, show_only_same = False, show_only_different = False, show_atom_labels = False, connect_atoms_A_B = False, A=None, B=None, covalent = True, xyz_outline=False, print_parameters = False, legend = True, print_latex=False):
         """Visualise the bond critical points w/ Py3Dmol
             use xyz_file to get coordinates for connecting the CPs
             according to the connected_atoms list"""
+        connection_indexes = []
+        if print_latex:
+            latex_headers_printed = False
         if print_parameters:
             headers_printed = False
             cp_of_interest_num = 0
@@ -160,6 +163,8 @@ class QTAIM:
                 view.addCylinder({'start': {'x': coord2[0], 'y': coord2[1], 'z': coord2[2]},
                         'end':   {'x': bcp_x, 'y': bcp_y, 'z': bcp_z},
                         'color': color, 'radius': 0.01})
+                
+                connection_indexes.append((atom1, atom2))
 
         # add bcps with different colors depending on the type of CP (blue for bond (3,-1), red for ring(3,+1), green for cage(3,+3), yellow for (3,-3))
         for i, cp_no in enumerate(self.parameters["CP_no"]):
@@ -219,9 +224,8 @@ class QTAIM:
                     print("{:<5} {:<10} {:<20} {:<10} {:<12} {:<15} {:<20} {:<20} {:<15}".format(
                         "CP", "Type", "ConnectedAtoms", "Rho", "Laplacian", "EnergyDensity", "PotentialEDensity", "LagrangianKcEnergy", "IntDist"
                     ))
-                    headers_printed = True 
-                
-                print("{:<5} {:<10} {:<20} {:<10.3f} {:<12.3f} {:<15.3f} {:<20.3f} {:<20.3f} {:<15.2f}".format(
+                    headers_printed = True
+                print("{:<5} {:<10} {:<20} {:<10.3f} {:<12.3f} {:<15.3f} {:<20.3f} {:<20.3f} {:<15}".format(
                     self.parameters["CP_no"][i],
                     self.parameters["type"][i],
                     self.parameters["connected_atoms"][i],
@@ -230,11 +234,31 @@ class QTAIM:
                     self.parameters["energy_density"][i],
                     self.parameters["potential_energy_density"][i],
                     self.parameters["lagrangian_kinetic_energy"][i],
-                    length if length else "N/A"
+                    f"{length:.2f}" if length else "N/A"
                 ))
                 cp_of_interest_num += 1
+
+            if print_latex:
+                # For LaTeX, print header if not printed already
+                if not latex_headers_printed:
+                    print("\\begin{table}[H]")
+                    print("\\centering")
+                    print("\\begin{tabular}{|c|c|c|c|c|c|}")
+                    print("\\hline")
+                    print("CP & Type & ConnectedAtoms & Rho & Laplacian & IntDist \\\\")
+                    latex_headers_printed = True
+                print("\\hline")
+                print(f"{self.parameters['CP_no'][i]} & {self.parameters['type'][i]} & {self.parameters['connected_atoms'][i]} & {self.parameters['rho'][i]:.3f} & {self.parameters['laplacian'][i]:.3f} & {length:.2f} \\\\")
+        
+        if print_latex:
+            print("\\hline")
+            print("\\end{tabular}")
+            print("\\caption{QTAIM parameters for CPs in the molecule.}")
+            print("\\label{tab:qtaim}")
+            print("\\end{table}")
         if print_parameters:
             print(f"Total number of interactions of interest: {cp_of_interest_num}")
+        
 
         # legend for the different colors, positioned to avoid overlap
         if legend:
@@ -522,8 +546,11 @@ class QTAIM:
             # add xyz molecule structure into the view
             view.addModel(open(xyz_file, 'r').read(), 'xyz')
             view.setStyle({'stick': {'radius': 0.03}})
+            
 
         view.setBackgroundColor('white')
         if display:
             view.zoomTo()
             view.show()
+        connection_indexes = set(connection_indexes)
+        return connection_indexes
