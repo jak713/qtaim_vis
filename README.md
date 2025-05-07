@@ -42,3 +42,5 @@ qtaim.visualise("your_structure.xyz",
                     A="C",
                     B="H")
 ```
+
+![example](pics/screenshot.png)
