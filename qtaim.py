@@ -166,8 +166,8 @@ class QTAIM:
                 view.addCylinder({'start': {'x': coord2[0], 'y': coord2[1], 'z': coord2[2]},
                         'end':   {'x': bcp_x, 'y': bcp_y, 'z': bcp_z},
                         'color': color, 'radius': 0.01})
-                
-                connection_indexes.append((atom1, atom2))
+                if self.parameters["laplacian"][cp_no] > 0:
+                    connection_indexes.append((atom1, atom2))
 
         # add bcps with different colors depending on the type of CP (blue for bond (3,-1), red for ring(3,+1), green for cage(3,+3), yellow for (3,-3))
         for i, cp_no in enumerate(self.parameters["CP_no"]):
