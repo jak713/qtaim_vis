@@ -1,6 +1,7 @@
 import py3Dmol
 import re
 import math as m
+import matplotlib.pyplot as plt
 
 class QTAIM:
     __version__ = "1.0.4"
@@ -262,48 +263,25 @@ class QTAIM:
             print(f"Total number of interactions of interest: {cp_of_interest_num}")
         
 
-        # legend for the different colors, positioned to avoid overlap
         if legend:
-            legend_items = [
-                {"label": "Bond Critical Point", "color": "blue", "mode": "sphere"},
-                {"label": "Bond Critical Point (positive Laplacian)", "color": "lightblue", "mode": "sphere"},
-                {"label": "Ring Critical Point", "color": "red", "mode": "sphere"},
-                {"label": "Cage Critical Point", "color": "green", "mode": "sphere"},
-                {"label": "Nuclear Critical Point", "color": "yellow", "mode": "sphere"},
-                {"label": "Same Connecting Atoms", "color": "green", "mode": "line"},
-                {"label": "Different Connecting Atoms", "color": "red", "mode": "line"}
-            ]
-            # set starting position and spacing offsets for the legend items
-            start_x = -5
-            start_y = 5
-            spacing = 1.0
-            for i, item in enumerate(legend_items):
-                y_pos = start_y - i * spacing
-                if item["mode"] == "sphere":
-                    sphere_pos = {'x': start_x, 'y': y_pos, 'z': 0}
-                    label_pos = {'x': start_x + 0.5, 'y': y_pos, 'z': 0}
-                    view.addSphere({'center': sphere_pos, 'radius': 0.1, 'color': item["color"]})
-                    view.addLabel(item["label"], {
-                        'position': label_pos,
-                        'backgroundColor': 'white',
-                        'backgroundOpacity': 0.5,
-                        'fontSize': 10,
-                        'fontColor': 'black',
-                        'fontWeight': 'bold'
-                })
-                elif item["mode"] == "line":
-                    line_start = {'x': start_x, 'y': y_pos, 'z': 0}
-                    line_end = {'x': start_x + 0.5, 'y': y_pos, 'z': 0}
-                    label_pos = {'x': start_x + 0.6, 'y': y_pos, 'z': 0}
-                    view.addLine({'start': line_start, 'end': line_end, 'color': item["color"], 'radius': 5})
-                    view.addLabel(item["label"], {
-                        'position': label_pos,
-                        'backgroundColor': 'white',
-                        'backgroundOpacity': 0.5,
-                        'fontSize': 10,
-                        'fontColor': 'black',
-                        'fontWeight': 'bold'
-                    })
+            legend_items = {
+            "Bond Critical Point (negative Laplacian)": "blue",
+            "Bond Critical Point (positive Laplacian)": "lightblue",
+            "Ring Critical Point": "red",
+            "Cage Critical Point": "green",
+            "Nuclear Critical Point": "yellow",
+            "Same Connecting Atoms": "green",
+            "Different Connecting Atoms": "red"
+            }
+            fig, ax = plt.subplots(figsize=(3, 2))
+            ax.axis('off')
+            for label, color in legend_items.items():
+                if label.startswith("Same") or label.startswith("Different"):
+                    ax.plot([], [], marker='_', linestyle='none', markersize=10, color=color, label=label)
+                else:
+                    ax.plot([], [], marker='.', linestyle='none', markersize=10, color=color, label=label)
+            ax.legend(loc='center', frameon=False, fontsize='small', handlelength=1, handletextpad=0.5)
+            plt.show()
                 
         if show_atom_labels:
             """show atom type labels for the atoms in the xyz file"""
