@@ -17,6 +17,7 @@ multiwfn calculation.molden.input
 ```
 4. You have a CPprop.txt file ready after some time.
 
+You can put the [`qtaim.py`](https://github.com/jak713/qtaim_vis/blob/main/qtaim.py) file in your bin/ directory and import it from there
 
 Example usage
 ```python
@@ -31,7 +32,7 @@ qtaim.visualise("your_structure.xyz",
                     show_rho=False, 
                     show_pos_lap=True,  # generally what one might want for non-covalent interactions
                     hide_ring_cage=True, # hides BCPs of type (3,+3) and (3,+1)
-                    show_atom_labels = False, # atom type andn number
+                    show_atom_labels = False, # atom type and number
                     show_only_same=False, # same connecting atoms like 1C2C C -- C
                     show_only_different=False, # different connecting atoms like 201N59H for N -- H
                     show_bond_lengths=False, 
