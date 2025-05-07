@@ -6,10 +6,12 @@ class QTAIM:
     __version__ = "1.0.4"
 
     def __init__(self, file):
-        self.file = file # will use this one day
+        self.file = file
         self.parameters = self.extract_qtaim(file)
+        # for key in self.parameters:
+            # print(f"{key}: {self.parameters[key]}")
 	
-    def extract_qtaim(self, file): # any other params worth extracting?
+    def extract_qtaim(self, file):
         parameters = {
             "CP_no": [],
             "type": [],
@@ -30,7 +32,7 @@ class QTAIM:
                 parameters["connected_atoms"].append([])
             elif "Connected atoms" in line:
                 connected_atoms = [atom.replace('(', '').replace(')', '').replace('-', '').replace(' ', '') for atom in line.split()[2:]]
-                connected_atoms = [atom for atom in connected_atoms if atom] # remove any empty strings
+                connected_atoms = [atom for atom in connected_atoms if atom] 
                 if parameters["connected_atoms"]:
                     parameters["connected_atoms"][-1] = connected_atoms
             elif "Density of all electrons" in line:
@@ -48,7 +50,7 @@ class QTAIM:
             if len(atoms) >= 2:
                 donor = atoms[0]
                 acceptor = atoms[-1]
-                parameters["connected_atoms"][i] = donor + acceptor # no list of lists, turn into string if non-empty
+                parameters["connected_atoms"][i] = donor + acceptor
 
         return parameters
 
@@ -95,7 +97,7 @@ class QTAIM:
 
 
 #################################################################
-#               --- Visualisation Code ---                      #
+#                --- Visualisation Code ---                     #
 #################################################################
     def visualise(self, xyz_file,view=None, display=True, show_cp = False, show_rho = False, show_lap = False, show_pos_lap = False, show_bond_lengths = False, aboveXangstrom = False, belowXangstrom =False, X = None, hide_ring_cage = False, show_only_same = False, show_only_different = False, show_atom_labels = False, connect_atoms_A_B = False, A=None, B=None, covalent = True, xyz_outline=False, print_parameters = False, legend = True, print_latex=False):
         """Visualise the bond critical points w/ Py3Dmol
@@ -164,8 +166,8 @@ class QTAIM:
                 view.addCylinder({'start': {'x': coord2[0], 'y': coord2[1], 'z': coord2[2]},
                         'end':   {'x': bcp_x, 'y': bcp_y, 'z': bcp_z},
                         'color': color, 'radius': 0.01})
-                if self.parameters["laplacian"][cp_no] > 0:
-                    connection_indexes.append((atom1, atom2))
+                
+                connection_indexes.append((atom1, atom2))
 
         # add bcps with different colors depending on the type of CP (blue for bond (3,-1), red for ring(3,+1), green for cage(3,+3), yellow for (3,-3))
         for i, cp_no in enumerate(self.parameters["CP_no"]):
@@ -188,21 +190,20 @@ class QTAIM:
             y = self.parameters["y_coord"][i]
             z = self.parameters["z_coord"][i]
             connected = self.parameters["connected_atoms"][i]
-            if not connected:
-                continue
-            atom_indexs = re.findall(r'\d+', connected)
-            if len(atom_indexs) >= 2:
-                atom1 = int(atom_indexs[0]) - 1
-                atom2 = int(atom_indexs[1]) - 1
-                cp_no = int(self.parameters["CP_no"][self.parameters["connected_atoms"].index(atoms)]) - 1
-                # bcp_x = self.parameters["x_coord"][cp_no]
-                # bcp_y = self.parameters["y_coord"][cp_no]
-                # bcp_z = self.parameters["z_coord"][cp_no]
-                coord1 = coordinates[atom1]
-                coord2 = coordinates[atom2]
-                dist1 = m.sqrt((coord1[0] - x)**2 + (coord1[1] - y)**2 + (coord1[2] - z)**2)
-                dist2 = m.sqrt((coord2[0] - x)**2 + (coord2[1] - y)**2 + (coord2[2] - z)**2)
-                length = dist1 + dist2
+            if connected:
+                atom_indexs = re.findall(r'\d+', connected)
+                if len(atom_indexs) >= 2:
+                    atom1 = int(atom_indexs[0]) - 1
+                    atom2 = int(atom_indexs[1]) - 1
+                    cp_no = int(self.parameters["CP_no"][self.parameters["connected_atoms"].index(atoms)]) - 1
+                    # bcp_x = self.parameters["x_coord"][cp_no]
+                    # bcp_y = self.parameters["y_coord"][cp_no]
+                    # bcp_z = self.parameters["z_coord"][cp_no]
+                    coord1 = coordinates[atom1]
+                    coord2 = coordinates[atom2]
+                    dist1 = m.sqrt((coord1[0] - x)**2 + (coord1[1] - y)**2 + (coord1[2] - z)**2)
+                    dist2 = m.sqrt((coord2[0] - x)**2 + (coord2[1] - y)**2 + (coord2[2] - z)**2)
+                    length = dist1 + dist2
             if aboveXangstrom and X is not None:
                 if length < X:
                     continue
@@ -229,7 +230,7 @@ class QTAIM:
                 print("{:<5} {:<10} {:<20} {:<10.3f} {:<12.3f} {:<15.3f} {:<20.3f} {:<20.3f} {:<15}".format(
                     self.parameters["CP_no"][i],
                     self.parameters["type"][i],
-                    self.parameters["connected_atoms"][i],
+                    self.parameters["connected_atoms"][i] if connected else "",
                     self.parameters["rho"][i],
                     self.parameters["laplacian"][i],
                     self.parameters["energy_density"][i],
@@ -326,7 +327,7 @@ class QTAIM:
                         'fontSize': 10,
                         'fontColor': 'black',
                         'fontWeight': 'bold',
-                        'attached': True  # Attach the label to the sphere, though this may not work as expected (not a researched feature)iu
+                        'attached': True  # Attach the label to the sphere
                     })
 
         if show_cp:
@@ -554,4 +555,5 @@ class QTAIM:
             view.zoomTo()
             view.show()
         connection_indexes = set(connection_indexes)
-        return connection_indexes
+        
+        return connection_indexes if not display else None
