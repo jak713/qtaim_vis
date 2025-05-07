@@ -1,10 +1,5 @@
-from multiprocessing import connection
-from os import remove
-from tkinter import font
-import pandas as pd
 import py3Dmol
 import re
-<<<<<<< HEAD
 import warnings
 import numpy as np
 from ase.io import read
@@ -161,68 +156,17 @@ class CP():
         """Returns the lagrangian kinetic energy."""
         return self.properties["lagrangian_kinetic_energy"]
 
-=======
-import math as m
-import matplotlib.pyplot as plt
->>>>>>> refs/remotes/origin/main
 
 class QTAIM:
     __version__ = "1.0.4"
 
     def __init__(self, file):
         self.file = file
-<<<<<<< HEAD
         self.cps = self.get_cps()
 
     def __repr__(self):
         """String representation of the QTAIM object."""
         return f"QTAIM(file={self.file}, number of cps={len(self.cps)},"
-=======
-        self.parameters = self.extract_qtaim(file)
-        # for key in self.parameters:
-            # print(f"{key}: {self.parameters[key]}")
-	
-    def extract_qtaim(self, file):
-        parameters = {
-            "CP_no": [],
-            "type": [],
-            "connected_atoms": [],
-            "rho": [], 
-            "laplacian": [],
-            "energy_density": [],
-            "potential_energy_density": [],
-            "lagrangian_kinetic_energy": []
-        }
-        with open(file, 'r') as f:
-            lines = f.readlines()
-        for line in lines:
-            if "CP" in line:
-                parts = line.split()
-                parameters["CP_no"].append(parts[2].replace(',', ''))
-                parameters["type"].append(parts[4])
-                parameters["connected_atoms"].append([])
-            elif "Connected atoms" in line:
-                connected_atoms = [atom.replace('(', '').replace(')', '').replace('-', '').replace(' ', '') for atom in line.split()[2:]]
-                connected_atoms = [atom for atom in connected_atoms if atom] 
-                if parameters["connected_atoms"]:
-                    parameters["connected_atoms"][-1] = connected_atoms
-            elif "Density of all electrons" in line:
-                parameters["rho"].append(float(line.split()[-1]))
-            elif "Laplacian of electron density" in line:
-                parameters["laplacian"].append(float(line.split()[-1]))
-            elif "Energy density" in line:
-                parameters["energy_density"].append(float(line.split()[-1]))
-            elif "Potential energy density" in line:
-                parameters["potential_energy_density"].append(float(line.split()[-1]))
-            elif "Lagrangian kinetic energy" in line:
-                parameters["lagrangian_kinetic_energy"].append(float(line.split()[-1]))
-
-        for i, atoms in enumerate(parameters["connected_atoms"]):
-            if len(atoms) >= 2:
-                donor = atoms[0]
-                acceptor = atoms[-1]
-                parameters["connected_atoms"][i] = donor + acceptor
->>>>>>> refs/remotes/origin/main
 
 
     def get_cps(self) -> list[CP]:
@@ -278,11 +222,7 @@ class QTAIM:
         return self.get_connecting_cps_indices()
 
 #################################################################
-<<<<<<< HEAD
 # --- Visualisation Code ---
-=======
-#                --- Visualisation Code ---                     #
->>>>>>> refs/remotes/origin/main
 #################################################################
 
 
@@ -396,50 +336,10 @@ class QTAIM:
                 sphere_color = "green"
                 font_color = "white"
 
-<<<<<<< HEAD
             # add sphere for the CP
             if cp.cp_type == -1:
                 _,_, length = self.get_distance(cp, atoms)
                 if aboveXangstrom and length > aboveXangstrom:
-=======
-        # add bcps with different colors depending on the type of CP (blue for bond (3,-1), red for ring(3,+1), green for cage(3,+3), yellow for (3,-3))
-        for i, cp_no in enumerate(self.parameters["CP_no"]):
-            if self.parameters["x_coord"][i] is None:
-                continue
-            if connect_atoms_A_B and A is not None and B is not None:
-                if A == B:
-                    if set(re.findall(r'[A-Za-z]', str(self.parameters["connected_atoms"][i]))) != {A}:
-                        continue
-                else:
-                    if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
-                        continue  
-            if hide_ring_cage and self.parameters["type"][i] in ["(3,+1)", "(3,+3)"]:
-                continue
-            if show_only_same and not self.is_same_atom_type(i):
-                continue
-            if show_only_different and self.is_same_atom_type(i):
-                continue 
-            x = self.parameters["x_coord"][i]
-            y = self.parameters["y_coord"][i]
-            z = self.parameters["z_coord"][i]
-            connected = self.parameters["connected_atoms"][i]
-            if connected:
-                atom_indexs = re.findall(r'\d+', connected)
-                if len(atom_indexs) >= 2:
-                    atom1 = int(atom_indexs[0]) - 1
-                    atom2 = int(atom_indexs[1]) - 1
-                    cp_no = int(self.parameters["CP_no"][self.parameters["connected_atoms"].index(atoms)]) - 1
-                    # bcp_x = self.parameters["x_coord"][cp_no]
-                    # bcp_y = self.parameters["y_coord"][cp_no]
-                    # bcp_z = self.parameters["z_coord"][cp_no]
-                    coord1 = coordinates[atom1]
-                    coord2 = coordinates[atom2]
-                    dist1 = m.sqrt((coord1[0] - x)**2 + (coord1[1] - y)**2 + (coord1[2] - z)**2)
-                    dist2 = m.sqrt((coord2[0] - x)**2 + (coord2[1] - y)**2 + (coord2[2] - z)**2)
-                    length = dist1 + dist2
-            if aboveXangstrom and X is not None:
-                if length < X:
->>>>>>> refs/remotes/origin/main
                     continue
                 if belowXangstrom and length < belowXangstrom:
                     continue
@@ -468,7 +368,6 @@ class QTAIM:
                     else:
                         continue
 
-<<<<<<< HEAD
                 if show_bond_lengths:
                     label = f"Length: {length:.2f} Å"
                     label_off_set += label_shift
@@ -514,36 +413,6 @@ class QTAIM:
                 legend_items_show.add(5)
             else:
                 legend_items_show.add(6)
-=======
-            if not covalent:
-                if self.parameters["type"][i] == "(3,-1)" and self.parameters["laplacian"][i] < 0:
-                    continue
-                elif self.parameters["type"][i] == "(3,-3)":
-                    continue
-                color = "lightblue" if self.parameters["type"][i] == "(3,-1)" and self.parameters["laplacian"][i] > 0  else "red" if self.parameters["type"][i] == "(3,+1)" else "green" if  self.parameters["type"][i] == "(3,+3)" else "green" 
-            else:    
-                color = "lightblue" if self.parameters["type"][i] == "(3,-1)" and self.parameters["laplacian"][i] > 0 else "blue" if self.parameters["type"][i] == "(3,-1)" else "red" if self.parameters["type"][i] == "(3,+1)" else "green" if self.parameters["type"][i] == "(3,+3)" else "yellow"
-            view.addSphere({'center': {'x': x, 'y': y, 'z': z}, 'radius': 0.1, 'color': color})
-            
-            if print_parameters:
-                if not headers_printed:
-                    print("{:<5} {:<10} {:<20} {:<10} {:<12} {:<15} {:<20} {:<20} {:<15}".format(
-                        "CP", "Type", "ConnectedAtoms", "Rho", "Laplacian", "EnergyDensity", "PotentialEDensity", "LagrangianKcEnergy", "IntDist"
-                    ))
-                    headers_printed = True
-                print("{:<5} {:<10} {:<20} {:<10.3f} {:<12.3f} {:<15.3f} {:<20.3f} {:<20.3f} {:<15}".format(
-                    self.parameters["CP_no"][i],
-                    self.parameters["type"][i],
-                    self.parameters["connected_atoms"][i] if connected else "",
-                    self.parameters["rho"][i],
-                    self.parameters["laplacian"][i],
-                    self.parameters["energy_density"][i],
-                    self.parameters["potential_energy_density"][i],
-                    self.parameters["lagrangian_kinetic_energy"][i],
-                    f"{length:.2f}" if length else "N/A"
-                ))
-                cp_of_interest_num += 1
->>>>>>> refs/remotes/origin/main
 
             if show_rho:
                 label = f"ρ: {cp.rho:.2f}"
@@ -581,8 +450,8 @@ class QTAIM:
             if show_pos_lap and cp.laplacian < 0:
                 continue
 
+        # legend for the different colors, positioned to avoid overlap
         if legend:
-<<<<<<< HEAD
             legend_items = [
                 {"label": "Bond Critical Point", "color": "blue", "mode": "sphere"},
                 {"label": "Bond Critical Point (positive Laplacian)", "color": "lightblue", "mode": "sphere"},
@@ -616,87 +485,6 @@ class QTAIM:
             # extract atom types from the xyz file
             for atom in atoms:
                 label = atom.symbol
-=======
-            legend_items = {
-            "Bond Critical Point (negative Laplacian)": "blue",
-            "Bond Critical Point (positive Laplacian)": "lightblue",
-            "Ring Critical Point": "red",
-            "Cage Critical Point": "green",
-            "Nuclear Critical Point": "yellow",
-            "Same Connecting Atoms": "green",
-            "Different Connecting Atoms": "red"
-            }
-            fig, ax = plt.subplots(figsize=(3, 2))
-            ax.axis('off')
-            for label, color in legend_items.items():
-                if label.startswith("Same") or label.startswith("Different"):
-                    ax.plot([], [], marker='_', linestyle='none', markersize=10, color=color, label=label)
-                else:
-                    ax.plot([], [], marker='.', linestyle='none', markersize=10, color=color, label=label)
-            ax.legend(loc='center', frameon=False, fontsize='small', handlelength=1, handletextpad=0.5)
-            plt.show()
-                
-        if show_atom_labels:
-            """show atom type labels for the atoms in the xyz file"""
-            # extract atom types from the xyz file
-            atom_types = []
-            for line in lines[2:]:
-                parts = line.split()
-                if len(parts) >= 4:
-                    atom_types.append(parts[0])
-            # add labels for each atom in the xyz file
-            for i, atom in enumerate(atom_types):
-                if i < len(coordinates):
-                    x = coordinates[i][0]
-                    y = coordinates[i][1]
-                    z = coordinates[i][2]
-                    label = f"{atom}"
-                    view.addLabel(label, {
-                        'position': {'x': x, 'y': y, 'z': z},
-                        'backgroundColor': 'white',
-                        'backgroundOpacity': 0,
-                        'fontSize': 10,
-                        'fontColor': 'black',
-                        'fontWeight': 'bold',
-                        'attached': True  # Attach the label to the sphere
-                    })
-
-        if show_cp:
-            for i, cp_no in enumerate(self.parameters["CP_no"]):
-                if self.parameters["x_coord"][i] is None:
-                    continue
-                if hide_ring_cage and self.parameters["type"][i] in ["(3,+1)", "(3,+3)"]:
-                    continue
-                if show_only_same and not self.is_same_atom_type(i):
-                    continue
-                if show_only_different and self.is_same_atom_type(i):
-                    continue
-                if connect_atoms_A_B and A is not None and B is not None:
-                    if A == B:
-                        if set(re.findall(r'[A-Za-z]', str(self.parameters["connected_atoms"][i]))) != {A}:
-                            continue
-                    else:
-                        if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
-                            continue
-                x = self.parameters["x_coord"][i]
-                y = self.parameters["y_coord"][i]
-                z = self.parameters["z_coord"][i]
-                dist1 = m.sqrt((x - coordinates[0][0])**2 + (y - coordinates[0][1])**2 + (z - coordinates[0][2])**2)
-                dist2 = m.sqrt((x - coordinates[1][0])**2 + (y - coordinates[1][1])**2 + (z - coordinates[1][2])**2)
-                length = dist1 + dist2
-                if aboveXangstrom and X is not None:
-                    if length < X:
-                        continue
-                if belowXangstrom and X is not None:
-                    if length > X:
-                        continue
-                label = f"{cp_no}"
-                sphere_color = "lightblue" if self.parameters["type"][i] == "(3,-1)" and self.parameters["laplacian"][i] > 0 else \
-                    "blue" if self.parameters["type"][i] == "(3,-1)" else \
-                    "red" if self.parameters["type"][i] == "(3,+1)" else \
-                    "green" if self.parameters["type"][i] == "(3,+3)" else "yellow"
-                font_color = "black" if sphere_color == "yellow" or sphere_color == "lightblue"  else "white"
->>>>>>> refs/remotes/origin/main
                 view.addLabel(label, {
                     'position': {'x': atom.position[0], 'y': atom.position[1], 'z': atom.position[2]},
                     'backgroundColor': 'white',
@@ -713,16 +501,7 @@ class QTAIM:
             view.setStyle({'stick': {'radius': 0.03}})
 
         view.setBackgroundColor('white')
-<<<<<<< HEAD
         print("QTAIM analysis complete.")
         print(f"Number of total CPs: {len(self.cps)}")
         print(f"Number of visualised CPs: {len(visualised_cps)}")
         view.show()
-=======
-        if display:
-            view.zoomTo()
-            view.show()
-        connection_indexes = set(connection_indexes)
-        
-        return connection_indexes if not display else None
->>>>>>> refs/remotes/origin/main
