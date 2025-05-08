@@ -1,3 +1,5 @@
+The script is written to be used in a Jupyter Notebook for visualising results.
+
 This requires a CPprop.txt file from multiwfn. To obtain this starting with Orca, you can follow these steps:
 1. Single point calculation with desired level of theory
 2. From calculation.gbw file, use the command below to get wavefunction input for multiwfn:
