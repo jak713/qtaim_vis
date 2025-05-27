@@ -151,7 +151,7 @@ class QTAIM:
 #################################################################
 #                --- Visualisation Code ---                     #
 #################################################################
-    def visualise(self, xyz_file,view=None, display=True, show_cp = False, show_rho = False, show_lap = False, show_pos_lap = False, show_bond_lengths = False, aboveXangstrom = False, belowXangstrom =False, X = None, hide_ring_cage = False, show_only_same = False, show_only_different = False, show_atom_labels = False, connect_atoms_A_B = False, A=None, B=None, covalent = True, xyz_outline=False, print_parameters = False, legend = True, print_latex=False):
+    def visualise(self, xyz_file,view=None, display=True, show_cp = False, show_rho = False, show_lap = False, show_pos_lap = False, hide_bcp=False, show_bond_lengths = False, aboveXangstrom = False, belowXangstrom =False, X = None, hide_ring_cage = False, show_only_same = False, show_only_different = False, show_atom_labels = False, connect_atoms_A_B = False, A=None, B=None, covalent = True, xyz_outline=False, print_parameters = False, legend = True, print_latex=False, make_proportional=False):
         """Visualise the bond critical points w/ Py3Dmol
             use xyz_file to get coordinates for connecting the CPs
             according to the connected_atoms list"""
@@ -185,7 +185,9 @@ class QTAIM:
                         continue
                 else:
                     if not (A in self.parameters["connected_atoms"][i] and B in self.parameters["connected_atoms"][i]):
-                        continue  
+                        continue
+            if hide_bcp:
+                continue 
             if show_only_different and self.is_same_atom_type(i):
                 continue
             if show_only_same and not self.is_same_atom_type(i):
@@ -238,6 +240,8 @@ class QTAIM:
                 continue
             if show_only_different and self.is_same_atom_type(i):
                 continue 
+            if hide_bcp and self.parameters["type"][i] in ["(3,-1)"]:
+                continue
             x = self.parameters["x_coord"][i]
             y = self.parameters["y_coord"][i]
             z = self.parameters["z_coord"][i]
@@ -271,7 +275,11 @@ class QTAIM:
                 color = "lightblue" if self.parameters["type"][i] == "(3,-1)" and self.parameters["laplacian"][i] > 0  else "red" if self.parameters["type"][i] == "(3,+1)" else "green" if  self.parameters["type"][i] == "(3,+3)" else "green" 
             else:    
                 color = "lightblue" if self.parameters["type"][i] == "(3,-1)" and self.parameters["laplacian"][i] > 0 else "blue" if self.parameters["type"][i] == "(3,-1)" else "red" if self.parameters["type"][i] == "(3,+1)" else "green" if self.parameters["type"][i] == "(3,+3)" else "yellow"
-            view.addSphere({'center': {'x': x, 'y': y, 'z': z}, 'radius': 0.1, 'color': color})
+            if make_proportional:
+                radius = 5000 * (self.parameters["rho"][i] / max(self.parameters["rho"]))
+            else:
+                radius = 0.1
+            view.addSphere({'center': {'x': x, 'y': y, 'z': z}, 'radius': radius, 'color': color})
             
             if print_parameters:
                 if not headers_printed:
