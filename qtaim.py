@@ -12,6 +12,57 @@ class QTAIM:
         # for key in self.parameters:
             # print(f"{key}: {self.parameters[key]}")
 	
+    def help():
+        """Prints the help message for the QTAIM class in a tabular format."""
+        print("QTAIM Class Help")
+        print("-"*60)
+
+        methods = [
+            ("help()", "Prints this help message."),
+            ("extract_qtaim(file)", "Extract QTAIM parameters from the file."),
+            ("is_same_atom_type(cp_no)", "Checks if connected atoms are the same type."),
+            ("get_coordinates()", "Extracts CP coordinates from the file."),
+            ("visualise(xyz_file, ...)", "Visualizes bond critical points with Py3Dmol.")
+        ]
+
+        print("{:<35}{}".format("Method", "Description"))
+        print("-"*60)
+        for m, desc in methods:
+            print("{:<35}{}".format(m, desc))
+
+        print("\nvisualise parameters:")
+        print("-"*60)
+        params = [
+            ("xyz_file", "Path to atom coordinates (XYZ file)."),
+            ("show_cp", "Show critical points (False)."),
+            ("show_rho", "Show electron density (False)."),
+            ("show_lap", "Show Laplacian (False)."),
+            ("show_pos_lap", "Show positive Laplacian (False)."),
+            ("show_bond_lengths", "Show bond lengths (False)."),
+            ("aboveXangstrom", "Include bond lengths above X (False)."),
+            ("belowXangstrom", "Include bond lengths below X (False)."),
+            ("X", "Comparison value for bond lengths (None)."),
+            ("hide_ring_cage", "Hide ring/cage CPs (False)."),
+            ("show_only_same", "Show CPs with same atom type (False)."),
+            ("show_only_different", "Show CPs with different atom types (False)."),
+            ("show_atom_labels", "Show atom labels (False)."),
+            ("connect_atoms_A_B", "Connect atoms A and B (False)."),
+            ("A, B", "Atoms to connect (None)."),
+            ("covalent", "Show covalent CPs only (True)."),
+            ("xyz_outline", "Show XYZ molecule structure (False)."),
+            ("print_parameters", "Print CP parameters (False).")
+        ]
+
+        print("{:<30}{}".format("Parameter", "Description"))
+        print("-"*60)
+        for p, pdesc in params:
+            print("{:<30}{}".format(p, pdesc))
+
+        print("\nExample usage:")
+        print("  qtaim = QTAIM('path/to/CPprop.txt')")
+        print("  qtaim.visualise('path/to/xyz_file.xyz', show_cp=True, show_rho=True,")
+        print("                  show_lap=True, show_bond_lengths=True, aboveXangstrom=True, X=1.5)")
+
     def extract_qtaim(self, file):
         parameters = {
             "CP_no": [],
