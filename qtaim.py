@@ -4,7 +4,7 @@ import math as m
 import matplotlib.pyplot as plt
 
 class QTAIM:
-    __version__ = "1.0.4"
+    __version__ = "1.0.5"
 
     def __init__(self, file):
         self.file = file
@@ -48,7 +48,7 @@ class QTAIM:
             ("show_atom_labels", "Show atom labels (False)."),
             ("connect_atoms_A_B", "Connect atoms A and B (False)."),
             ("A, B", "Atoms to connect (None)."),
-            ("covalent", "Show covalent CPs only (True)."),
+            ("covalent", "Show covalent CPs (highly negative Lap) (True)."),
             ("xyz_outline", "Show XYZ molecule structure (False)."),
             ("print_parameters", "Print CP parameters (False).")
         ]
@@ -221,7 +221,7 @@ class QTAIM:
                 if self.parameters["laplacian"][cp_no] > 0:
                     connection_indexes.append((atom1, atom2))
 
-        # add bcps with different colors depending on the type of CP (blue for bond (3,-1), red for ring(3,+1), green for cage(3,+3), yellow for (3,-3))
+        # add bcps with different colours depending on the type of CP (blue for bond (3,-1), red for ring(3,+1), green for cage(3,+3), yellow for (3,-3))
         for i, cp_no in enumerate(self.parameters["CP_no"]):
             if self.parameters["x_coord"][i] is None:
                 continue
@@ -282,7 +282,7 @@ class QTAIM:
                 print("{:<5} {:<10} {:<20} {:<10.3f} {:<12.3f} {:<15.3f} {:<20.3f} {:<20.3f} {:<15}".format(
                     self.parameters["CP_no"][i],
                     self.parameters["type"][i],
-                    self.parameters["connected_atoms"][i] if connected else "",
+                    self.parameters["connected_atoms"][i] if (connected and hide_ring_cage==False) else "",
                     self.parameters["rho"][i],
                     self.parameters["laplacian"][i],
                     self.parameters["energy_density"][i],
