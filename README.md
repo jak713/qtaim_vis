@@ -12,9 +12,12 @@ multiwfn calculation.molden.input
 2 Topology analysis
 2 Search CPs from nuclear positions
 3 Search CPs from midpoint of atomic pairs
+4 Search CPs from triangle center of three atoms
+5  Search CPs from pyramid center of four atoms
 8 Generating the paths connecting (3,-3) and (3,-1) CPs
+0 Print and visualize all generated CPs, paths and interbasin surfaces (make sure all CPs have been found)
 7 Show real space function values at specific CP or all CPs
-0
+0 (Note 1: If input 0, then properties of all CPs will be outputted to CPprop.txt in current folder (and if you feel the output speed is slow, you can input -1 to avoid outputting ESP, which is the most expensive one))
 ```
 4. You have a CPprop.txt file ready after some time.
 
