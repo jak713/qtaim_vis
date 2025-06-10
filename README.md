@@ -13,7 +13,6 @@ multiwfn calculation.molden.input
 2 Search CPs from nuclear positions
 3 Search CPs from midpoint of atomic pairs
 8 Generating the paths connecting (3,-3) and (3,-1) CPs
-9 Generating the paths connecting (3,+1) and (3,+3) CPs
 7 Show real space function values at specific CP or all CPs
 0
 ```
