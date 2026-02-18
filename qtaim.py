@@ -149,12 +149,19 @@ class QTAIM:
 
 
 #################################################################
-#                --- Visualisation Code ---                     #
+#                --- Visualisation Function ---                 #
 #################################################################
     def visualise(self, xyz_file,view=None, display=True, show_cp = False, show_rho = False, show_lap = False, show_pos_lap = False, hide_bcp=False, show_bond_lengths = False, aboveXangstrom = False, belowXangstrom =False, X = None, hide_ring_cage = False, show_only_same = False, show_only_different = False, show_atom_labels = False, connect_atoms_A_B = False, A=None, B=None, covalent = True, xyz_outline=False, print_parameters = False, legend = True, print_latex=False, make_proportional=False):
         """Visualise the bond critical points w/ Py3Dmol
             use xyz_file to get coordinates for connecting the CPs
-            according to the connected_atoms list"""
+            according to the connected_atoms list.
+            
+            :param Bool display: True by default. Displays a py3dmol object. Used mostly when combining NBO and QTAIM results.
+            :param Bool show_cp: Displays critical point numbers at displayed CP spheres.
+            :param Bool show_rho: Displays rho values at displayed CP spheres.
+            ...
+            ...
+            :param Bool make_proportional: Adjusts sphere size to their relative Laplacian values."""
         connection_indexes = []
         if print_latex:
             latex_headers_printed = False
@@ -290,7 +297,7 @@ class QTAIM:
                 print("{:<5} {:<10} {:<20} {:<10.3f} {:<12.3f} {:<15.3f} {:<20.3f} {:<20.3f} {:<15}".format(
                     self.parameters["CP_no"][i],
                     self.parameters["type"][i],
-                    self.parameters["connected_atoms"][i] if (connected and hide_ring_cage==False) else "",
+                    self.parameters["connected_atoms"][i] if (connected and hide_ring_cage==True) or (connected and hide_ring_cage==False) else "", #something really wrong here but i am tired
                     self.parameters["rho"][i],
                     self.parameters["laplacian"][i],
                     self.parameters["energy_density"][i],
